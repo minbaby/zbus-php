@@ -41,7 +41,10 @@ class TimerTest extends TestCase
     public function testGetCallBack()
     {
         $timer = new Timer(Timer::MIN_INTERVAL, $this->getCallback(), true);
-        $this->assertEquals($timer->getCallback()(), $this->getCallback()());
+        $actual = $timer->getCallback();
+        $excepted = $this->getCallback();
+        $this->assertTrue(is_callable($actual));
+        $this->assertEquals($actual(), $excepted());
 
         //throw TypeError
         new Timer(Timer::MIN_INTERVAL, null, true);
