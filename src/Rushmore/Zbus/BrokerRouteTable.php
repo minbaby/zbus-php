@@ -2,6 +2,9 @@
 
 namespace Rushmore\Zbus;
 
+use Exception;
+use Rushmore\Zbus\Mq\MqClientAsync;
+
 class BrokerRouteTable
 {
     use EventEmitter;
@@ -22,6 +25,13 @@ class BrokerRouteTable
     private $autoReconnect = true;
     private $connectTimer;
 
+    /**
+     * BrokerRouteTable constructor.
+     * @param $address
+     * @param EventLoop $loop
+     * @param null $sslCertFile
+     * @param int $heartbeatInterval
+     */
     public function __construct($address, $loop, $sslCertFile = null, $heartbeatInterval = 60)
     {
         $this->serverAddress = new ServerAddress($address);

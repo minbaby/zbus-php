@@ -2,6 +2,8 @@
 
 namespace Rushmore\Zbus;
 
+use Exception;
+
 class ServerAddress
 {
     public $address;

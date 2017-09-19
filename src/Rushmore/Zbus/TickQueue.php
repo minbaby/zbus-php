@@ -2,6 +2,8 @@
 
 namespace Rushmore\Zbus;
 
+use SplQueue;
+
 final class TickQueue
 {
     private $queue;

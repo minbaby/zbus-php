@@ -2,6 +2,9 @@
 
 namespace Rushmore\Zbus;
 
+use SplObjectStorage;
+use SplPriorityQueue;
+
 final class Timers
 {
     private $time;

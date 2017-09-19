@@ -1,6 +1,10 @@
 <?php
 
-namespace Rushmore\Zbus;
+namespace Rushmore\Zbus\Mq;
+
+use Exception;
+use Rushmore\Zbus\Logger;
+use Rushmore\Zbus\ServerAddress;
 
 class MqClient
 {

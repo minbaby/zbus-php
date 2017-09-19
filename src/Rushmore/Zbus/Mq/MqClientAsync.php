@@ -1,6 +1,14 @@
 <?php
 
-namespace Rushmore\Zbus;
+namespace Rushmore\Zbus\Mq;
+
+use Exception;
+use Rushmore\Zbus\EventEmitter;
+use Rushmore\Zbus\Logger;
+use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Protocol;
+use Rushmore\Zbus\ServerAddress;
+use Rushmore\Zbus\Stream;
 
 class MqClientAsync
 {

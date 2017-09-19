@@ -1,6 +1,6 @@
 <?php
 
-namespace Rushmore\Zbus;
+namespace Rushmore\Zbus\Rpc;
 
 class RpcProcessor
 {

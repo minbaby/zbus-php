@@ -2,6 +2,8 @@
 
 namespace Rushmore\Zbus;
 
+use Rushmore\Zbus\Mq\MqClientAsync;
+
 class Broker
 {
     use EventEmitter;

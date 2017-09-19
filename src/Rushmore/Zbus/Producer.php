@@ -2,6 +2,9 @@
 
 namespace Rushmore\Zbus;
 
+use Exception;
+use Rushmore\Zbus\Mq\MqAdmin;
+
 class Producer extends MqAdmin
 {
     protected $produceSelector;
