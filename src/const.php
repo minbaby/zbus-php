@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @info php > 5.6 支持 const 为数组
+ */
 const HTTP_STATUS_TABLE = [
     200 => "OK",
     201 => "Created",
