@@ -2,6 +2,10 @@
 
 namespace Rushmore\Zbus\Mq;
 
+use Exception;
+use Rushmore\Zbus\Protocol;
+use Rushmore\Zbus\ServerAddress;
+
 class MqAdmin
 {
     protected $broker;
