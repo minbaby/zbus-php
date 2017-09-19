@@ -1,0 +1,15 @@
+{
+  "name": "rushmore/zbus-php",
+  "description": "zbus",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "minbaby.zhang",
+      "email": "zhangshaomin_1990@126.com"
+    }
+  ],
+  "require": {
+    "php": ">=5"
+  }
+}
