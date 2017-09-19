@@ -1,61 +1,60 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zhangshaomin
- * Date: 2017/9/19
- * Time: 15:26
- */
 
 namespace Rushmore\Zbus;
 
-class RpcProcessor {
-    private $methods = array();
+class RpcProcessor
+{
+    private $methods = [];
 
-    public function addModule($service, $module=null){
-        if(is_string($service)){
+    public function addModule($service, $module = null)
+    {
+        if (is_string($service)) {
             $service = new $service();
         }
         $serviceClass = get_class($service);
         $class = new ReflectionClass($serviceClass);
         $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC & ~ReflectionMethod::IS_STATIC);
-        foreach($methods as $method){
+        foreach ($methods as $method) {
             $key = $this->genKey($module, $method->name);
-            $this->methods[$key] = array($method, $service);
+            $this->methods[$key] = [$method, $service];
         }
     }
 
-    private function genKey($module, $method_name){
+    private function genKey($module, $method_name)
+    {
         return "$module:$method_name";
     }
 
-    private function process($request){
+    private function process($request)
+    {
         $key = $this->genKey($request->module, $request->method);
         $m = @$this->methods[$key];
-        if($m == null){
+        if ($m == null) {
             throw new ErrorException("Missing method $key");
         }
         $args = $request->params;
-        if($args === null){
-            $args = array();
+        if ($args === null) {
+            $args = [];
         }
         $response = new Response();
-        try{
+        try {
             $response->result = $m[0]->invokeArgs($m[1], $args);
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $response->error = $e;
         }
         return $response;
     }
 
 
-    public function messageHandler($msg, $client){
+    public function messageHandler($msg, $client)
+    {
         $msgRes = new Message();
         $msgRes->recver = $msg->sender;
         $msgRes->id = $msg->id;
         $msgRes->status = 200;
 
         $response = new Response();
-        try{
+        try {
             $json = json_decode($msg->body, true);
             $request = new Request();
             $request->method = @$json['method'];
@@ -63,8 +62,7 @@ class RpcProcessor {
             $request->module = @$json['module'];
 
             $response = $this->process($request);
-
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $response->error = $e->getMessage();
         }
         $jsonRes = json_encode($response);

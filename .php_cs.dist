@@ -1,0 +1,32 @@
+<?php
+
+return \PhpCsFixer\Config::create()
+    ->setRules([
+        '@PSR2' => true,
+        'array_syntax' => ['syntax' => 'short'],
+        'blank_line_after_opening_tag' => true,
+        'single_blank_line_before_namespace' => true,
+        'single_blank_line_at_eof' => true,
+        'single_line_after_imports' => true,
+        'no_unused_imports' => true,
+        'function_declaration' => true,
+        'lowercase_keywords' => true,
+        'lowercase_constants' => true,
+        'elseif'  => true,
+        'braces' => [
+            'allow_single_line_closure' => true,
+        ],
+        'method_argument_space' => [
+            'ensure_fully_multiline' => false,
+            'keep_multiple_spaces_after_comma' => false,
+        ],
+        'binary_operator_spaces' => [
+            'align_equals' => false,
+        ],
+    ])
+    ->setFinder(
+        PhpCsFixer\Finder::create()
+            ->in(__DIR__ . '/src')
+    )->setRiskyAllowed(true)
+    ->setLineEnding("\n")
+    ->setUsingCache(true);

@@ -2,7 +2,8 @@
 
 namespace Rushmore\Zbus;
 
-class ConsumeGroup {
+class ConsumeGroup
+{
     public $topic;        //topic of the group
     public $groupName;
     public $filter;
@@ -11,12 +12,14 @@ class ConsumeGroup {
     public $startMsgId;
     public $startTime;    //unix time, create group start from time
 
-    function __construct($groupName = null, $filter = null) {
+    public function __construct($groupName = null, $filter = null)
+    {
         $this->groupName = $groupName;
         $this->filter = $filter;
     }
 
-    public function fromMessage($msg){
+    public function fromMessage($msg)
+    {
         $this->topic = $msg->getHeader(Protocol::TOPIC);
         $this->groupName = $msg->getHeader(Protocol::CONSUME_GROUP);
         $this->filter = $msg->getHeader(Protocol::GROUP_FILTER);
@@ -26,7 +29,8 @@ class ConsumeGroup {
         $this->startTime = $msg->getHeader(Protocol::GROUP_START_TIME);
     }
 
-    public function toMessage($msg){
+    public function toMessage($msg)
+    {
         $msg->setHeader(Protocol::TOPIC, $this->topic);
         $msg->setHeader(Protocol::CONSUME_GROUP, $this->groupName);
         $msg->setHeader(Protocol::GROUP_FILTER, $this->filter);

@@ -1,35 +1,31 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zhangshaomin
- * Date: 2017/9/19
- * Time: 15:24
- */
 
 namespace Rushmore\Zbus;
 
-class Consumer extends  MqAdmin{
+class Consumer extends MqAdmin
+{
     public $messageHandler;
     public $topic;
     public $consumeGroup;
 
     public $consumeSelector;
     public $connectionCount = 1;
-    public $consumeClientTable = array();
+    public $consumeClientTable = [];
 
 
-    public function __construct($broker, $topic, $consumeGroup = null){
+    public function __construct($broker, $topic, $consumeGroup = null)
+    {
         parent::__construct($broker);
         $this->topic = $topic;
         $this->consumeGroup = $consumeGroup;
-        if($this->consumeGroup == null){
+        if ($this->consumeGroup == null) {
             $this->consumeGroup = new ConsumeGroup();
         }
 
-        $this->consumeSelector = function($routeTable, $msg){
+        $this->consumeSelector = function ($routeTable, $msg) {
             $serverTable = $routeTable->serverTable;
-            $addressArray = array();
-            foreach($serverTable as $key => $serverInfo){
+            $addressArray = [];
+            foreach ($serverTable as $key => $serverInfo) {
                 $serverAddress = new ServerAddress($serverInfo['serverAddress']);
                 array_push($addressArray, $serverAddress);
             }
@@ -37,21 +33,23 @@ class Consumer extends  MqAdmin{
         };
     }
 
-    public function start(){
+    public function start()
+    {
         $c = $this;
-        $this->broker->on('serverJoin', function($client) use($c){
+        $this->broker->on('serverJoin', function ($client) use ($c) {
             $c->consumeToServer($client);
         });
 
-        $this->broker->on('serverLeave', function($serverAddress) use($c){
+        $this->broker->on('serverLeave', function ($serverAddress) use ($c) {
             $c->leaveServer($serverAddress);
         });
     }
 
-    private function consumeToServer($client){
+    private function consumeToServer($client)
+    {
         $serverAddress = $client->serverAddress;
-        $clientList= @$this->consumeClientTable[(string)$serverAddress];
-        if($clientList !== null) {
+        $clientList = @$this->consumeClientTable[(string)$serverAddress];
+        if ($clientList !== null) {
             return;
         }
 
@@ -60,8 +58,8 @@ class Consumer extends  MqAdmin{
         $this->consumeGroup->toMessage($msg);
         $msg->token = $this->token;
 
-        $clientList = array();
-        for($i=0; $i<$this->connectionCount;$i++){
+        $clientList = [];
+        for ($i = 0; $i < $this->connectionCount;$i++) {
             $forkedClient = $client->fork();
             array_push($clientList, $forkedClient);
             $this->consume($forkedClient, $msg);
@@ -69,25 +67,29 @@ class Consumer extends  MqAdmin{
         $this->consumeClientTable[(string)$serverAddress] = $clientList;
     }
 
-    private function leaveServer($serverAddress){
+    private function leaveServer($serverAddress)
+    {
         $clientList = @$this->consumeClientTable[(string)$serverAddress];
-        if($clientList === null) return;
+        if ($clientList === null) {
+            return;
+        }
 
-        foreach ($clientList as $key => $client){
+        foreach ($clientList as $key => $client) {
             $client->close();
         }
         unset($this->consumeClientTable[(string)$serverAddress]);
     }
 
-    private function consume($client, $consumeCtrl){
+    private function consume($client, $consumeCtrl)
+    {
         $consumer = $this;
-        $client->on('connected', function() use($consumer, $client, $consumeCtrl){
-            $client->declare_($consumeCtrl, function($res) use($consumer, $client, $consumeCtrl){
-                if(is_a($res, 'Exception')){
+        $client->on('connected', function () use ($consumer, $client, $consumeCtrl) {
+            $client->declare_($consumeCtrl, function ($res) use ($consumer, $client, $consumeCtrl) {
+                if (is_a($res, 'Exception')) {
                     Logger::error('Declare error: ' . $res->getMessage());
                     return;
                 }
-                $client->consume($consumeCtrl, function($res) use($consumer, $client, $consumeCtrl){
+                $client->consume($consumeCtrl, function ($res) use ($consumer, $client, $consumeCtrl) {
                     $consumer->consumeCallback($client, $consumeCtrl, $res);
                 });
             });
@@ -96,15 +98,16 @@ class Consumer extends  MqAdmin{
         $client->connect();
     }
 
-    private function consumeCallback($client, $consumeCtrl, $res){
+    private function consumeCallback($client, $consumeCtrl, $res)
+    {
         $consumer = $this;
-        if($res->status == 404){
-            $client->declare_($consumeCtrl, function($res) use($consumer, $client, $consumeCtrl){
-                if(is_a($res, 'Exception')){
+        if ($res->status == 404) {
+            $client->declare_($consumeCtrl, function ($res) use ($consumer, $client, $consumeCtrl) {
+                if (is_a($res, 'Exception')) {
                     Logger::error('Declare error: ' . $res->getMessage());
                     return;
                 }
-                $client->consume($consumeCtrl, function($res) use($consumer, $client,$consumeCtrl){
+                $client->consume($consumeCtrl, function ($res) use ($consumer, $client,$consumeCtrl) {
                     $consumer->consumeCallback($client, $consumeCtrl, $res);
                 });
             });
@@ -115,18 +118,18 @@ class Consumer extends  MqAdmin{
         $id = $res->origin_id;
         $res->removeHeader('origin_url');
         $res->removeHeader('origin_id');
-        if($originUrl !== null){
+        if ($originUrl !== null) {
             $res->url = $originUrl;
         }
         $res->id = $id;
 
-        if($this->messageHandler !== null){
-            try{
+        if ($this->messageHandler !== null) {
+            try {
                 call_user_func($this->messageHandler, $res, $client);
-            } catch (Exception $e){
+            } catch (Exception $e) {
                 Logger::warn($e->getMessage());
             } finally {
-                $client->consume($consumeCtrl, function($res) use($consumer,$client, $consumeCtrl){
+                $client->consume($consumeCtrl, function ($res) use ($consumer,$client, $consumeCtrl) {
                     $consumer->consumeCallback($client, $consumeCtrl, $res);
                 });
             }

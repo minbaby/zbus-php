@@ -1,6 +1,6 @@
 <?php
 
-const HTTP_STATUS_TABLE = array(
+const HTTP_STATUS_TABLE = [
     200 => "OK",
     201 => "Created",
     202 => "Accepted",
@@ -15,4 +15,4 @@ const HTTP_STATUS_TABLE = array(
     405 => "Method Not Allowed",
     416 => "Requested Range Not Satisfiable",
     500 => "Internal Server Error",
-);
+];

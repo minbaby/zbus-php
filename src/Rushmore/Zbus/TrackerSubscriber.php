@@ -2,12 +2,14 @@
 
 namespace Rushmore\Zbus;
 
-class TrackerSubscriber {
+class TrackerSubscriber
+{
     public $client;
     public $readyCount = 0;
     public $readyTriggered = false;
 
-    public function __construct($client){
+    public function __construct($client)
+    {
         $this->client = $client;
     }
 }

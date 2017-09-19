@@ -1,32 +1,31 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zhangshaomin
- * Date: 2017/9/19
- * Time: 15:26
- */
 
 namespace Rushmore\Zbus;
 
-final class Timers {
+final class Timers
+{
     private $time;
     private $timers;
     private $scheduler;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->timers = new SplObjectStorage();
         $this->scheduler = new SplPriorityQueue();
     }
 
-    public function updateTime() {
+    public function updateTime()
+    {
         return $this->time = microtime(true);
     }
 
-    public function getTime() {
+    public function getTime()
+    {
         return $this->time ?: $this->updateTime();
     }
 
-    public function add(Timer $timer) {
+    public function add(Timer $timer)
+    {
         $interval = $timer->getInterval();
         $scheduledAt = $interval + microtime(true);
 
@@ -34,15 +33,18 @@ final class Timers {
         $this->scheduler->insert($timer, -$scheduledAt);
     }
 
-    public function contains(Timer $timer) {
+    public function contains(Timer $timer)
+    {
         return $this->timers->contains($timer);
     }
 
-    public function cancel(Timer $timer) {
+    public function cancel(Timer $timer)
+    {
         $this->timers->detach($timer);
     }
 
-    public function getFirst() {
+    public function getFirst()
+    {
         while ($this->scheduler->count()) {
             $timer = $this->scheduler->top();
 
@@ -56,11 +58,13 @@ final class Timers {
         return null;
     }
 
-    public function isEmpty() {
+    public function isEmpty()
+    {
         return count($this->timers) === 0;
     }
 
-    public function tick() {
+    public function tick()
+    {
         $time = $this->updateTime();
         $timers = $this->timers;
         $scheduler = $this->scheduler;

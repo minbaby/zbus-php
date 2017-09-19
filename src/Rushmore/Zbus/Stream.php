@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zhangshaomin
- * Date: 2017/9/19
- * Time: 15:27
- */
 
 namespace Rushmore\Zbus;
 
-class Stream {
+class Stream
+{
     use EventEmitter;
 
     private $stream;
@@ -22,7 +17,8 @@ class Stream {
 
     private $data = '';
 
-    public function __construct($stream, EventLoop $loop, $writeBufferSoftLimit = null, $readChunkSize = null) {
+    public function __construct($stream, EventLoop $loop, $writeBufferSoftLimit = null, $readChunkSize = null)
+    {
         if (!is_resource($stream) || get_resource_type($stream) !== "stream") {
             throw new \InvalidArgumentException('Stream required');
         }
@@ -39,39 +35,44 @@ class Stream {
         $this->stream = $stream;
         $this->loop = $loop;
         $this->softLimit = ($writeBufferSoftLimit === null) ? 65536 : (int)$writeBufferSoftLimit;
-        $this->readBufferSize= ($readChunkSize === null) ? 65536 : (int)$readChunkSize;
+        $this->readBufferSize = ($readChunkSize === null) ? 65536 : (int)$readChunkSize;
 
         $this->resume();
     }
 
-    public function isActive(){
+    public function isActive()
+    {
         return !$this->closed;
     }
 
-    public function pause() {
+    public function pause()
+    {
         $this->loop->removeReadStream($this->stream);
     }
 
-    public function resume() {
+    public function resume()
+    {
         if ($this->readable) {
-            $this->loop->addReadStream($this->stream, array($this, 'handleRead'));
+            $this->loop->addReadStream($this->stream, [$this, 'handleRead']);
         }
     }
 
-    public function write($data) {
+    public function write($data)
+    {
         if (!$this->writable) {
             return false;
         }
 
         $this->data .= $data;
         if ($this->data !== '') {
-            $this->loop->addWriteStream($this->stream, array($this, 'handleWrite'));
+            $this->loop->addWriteStream($this->stream, [$this, 'handleWrite']);
         }
 
         return !isset($this->data[$this->softLimit - 1]);
     }
 
-    public function end($data = null) {
+    public function end($data = null)
+    {
         if (null !== $data) {
             $this->write($data);
         }
@@ -86,7 +87,8 @@ class Stream {
         }
     }
 
-    public function close() {
+    public function close()
+    {
         if ($this->closed) {
             return;
         }
@@ -98,20 +100,22 @@ class Stream {
         $this->writable = false;
         $this->data = '';
 
-        $this->emit('close', array($this));
+        $this->emit('close', [$this]);
         //$this->removeAllListeners();
 
         $this->handleClose();
     }
 
-    public function handleClose() {
+    public function handleClose()
+    {
         if (is_resource($this->stream)) {
             fclose($this->stream);
         }
     }
 
 
-    public function handleRead() {
+    public function handleRead()
+    {
         $error = null;
         set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$error) {
             $error = new ErrorException(
@@ -129,30 +133,31 @@ class Stream {
 
         if ($error !== null) {
             $this->close();
-            $this->emit('error', array(new RuntimeException('Unable to read from stream: ' . $error->getMessage(), 0, $error)));
+            $this->emit('error', [new RuntimeException('Unable to read from stream: ' . $error->getMessage(), 0, $error)]);
 
             return;
         }
 
         if ($data !== '') {
-            $this->emit('data', array($data));
+            $this->emit('data', [$data]);
         } else {
             // no data read => we reached the end and close the stream
             $this->close();
-            $this->emit('error', array(new RuntimeException('Closed by remote server')) );
+            $this->emit('error', [new RuntimeException('Closed by remote server')]);
         }
     }
 
 
-    public function handleWrite() {
+    public function handleWrite()
+    {
         $error = null;
         set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$error) {
-            $error = array(
+            $error = [
                 'message' => $errstr,
                 'number' => $errno,
                 'file' => $errfile,
                 'line' => $errline
-            );
+            ];
         });
 
         $sent = fwrite($this->stream, $this->data);
@@ -178,7 +183,7 @@ class Stream {
             }
 
             $this->close();
-            $this->emit('error', array(new RuntimeException('Unable to write to stream: ' . ($error !== null ? $error->getMessage() : 'Unknown error'), 0, $error)));
+            $this->emit('error', [new RuntimeException('Unable to write to stream: ' . ($error !== null ? $error->getMessage() : 'Unknown error'), 0, $error)]);
 
             return;
         }

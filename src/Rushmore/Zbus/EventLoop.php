@@ -1,7 +1,9 @@
 <?php
+
 namespace Rushmore\Zbus;
 
-class EventLoop {
+class EventLoop
+{
     const MICROSECONDS_PER_SECOND = 1000000;
 
     private $futureTickQueue;
@@ -12,12 +14,14 @@ class EventLoop {
     private $writeListeners = [];
     private $running;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->futureTickQueue = new TickQueue();
         $this->timers = new Timers();
     }
 
-    public function addReadStream($stream, callable $listener) {
+    public function addReadStream($stream, callable $listener)
+    {
         $key = (int) $stream;
         if (!isset($this->readStreams[$key])) {
             $this->readStreams[$key] = $stream;
@@ -25,7 +29,8 @@ class EventLoop {
         }
     }
 
-    public function addWriteStream($stream, callable $listener) {
+    public function addWriteStream($stream, callable $listener)
+    {
         $key = (int) $stream;
         if (!isset($this->writeStreams[$key])) {
             $this->writeStreams[$key] = $stream;
@@ -33,7 +38,8 @@ class EventLoop {
         }
     }
 
-    public function removeReadStream($stream) {
+    public function removeReadStream($stream)
+    {
         $key = (int) $stream;
         unset(
             $this->readStreams[$key],
@@ -41,7 +47,8 @@ class EventLoop {
         );
     }
 
-    public function removeWriteStream($stream) {
+    public function removeWriteStream($stream)
+    {
         $key = (int) $stream;
         unset(
             $this->writeStreams[$key],
@@ -49,34 +56,41 @@ class EventLoop {
         );
     }
 
-    public function removeStream($stream) {
+    public function removeStream($stream)
+    {
         $this->removeReadStream($stream);
         $this->removeWriteStream($stream);
     }
 
-    public function addTimer($interval, callable $callback, $periodic=false) {
+    public function addTimer($interval, callable $callback, $periodic = false)
+    {
         $timer = new Timer($interval, $callback, (bool)$periodic);
         $this->timers->add($timer);
         return $timer;
     }
 
-    public function cancelTimer(Timer $timer) {
+    public function cancelTimer(Timer $timer)
+    {
         $this->timers->cancel($timer);
     }
 
-    public function isTimerActive(Timer $timer) {
+    public function isTimerActive(Timer $timer)
+    {
         return $this->timers->contains($timer);
     }
 
-    public function futureTick(callable $listener) {
+    public function futureTick(callable $listener)
+    {
         $this->futureTickQueue->add($listener);
     }
 
-    public function runOnce() {
+    public function runOnce()
+    {
         $this->run(true);
     }
 
-    public function run($exit_on_empty=false) {
+    public function run($exit_on_empty = false)
+    {
         $this->running = true;
         while ($this->running) {
             $this->futureTickQueue->tick();
@@ -99,7 +113,7 @@ class EventLoop {
             } elseif ($this->readStreams || $this->writeStreams) {
                 $timeout = null;
             } else {
-                if ($exit_on_empty){
+                if ($exit_on_empty) {
                     break;
                 }
                 $timeout = round(0.01 * self::MICROSECONDS_PER_SECOND);
@@ -109,12 +123,14 @@ class EventLoop {
         }
     }
 
-    public function stop() {
+    public function stop()
+    {
         $this->running = false;
     }
 
-    private function waitForStreamActivity($timeout) {
-        $read  = $this->readStreams;
+    private function waitForStreamActivity($timeout)
+    {
+        $read = $this->readStreams;
         $write = $this->writeStreams;
 
         $available = $this->streamSelect($read, $write, $timeout);
@@ -139,7 +155,8 @@ class EventLoop {
         }
     }
 
-    protected function streamSelect(array &$read, array &$write, $timeout) {
+    protected function streamSelect(array &$read, array &$write, $timeout)
+    {
         if ($read || $write) {
             $except = null;
             // suppress warnings that occur, when stream_select is interrupted by a signal

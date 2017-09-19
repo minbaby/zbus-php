@@ -2,11 +2,13 @@
 
 namespace Rushmore\Zbus;
 
-trait EventEmitter {
+trait EventEmitter
+{
     protected $listeners = [];
     protected $onceListeners = [];
 
-    public function on($event, callable $listener) {
+    public function on($event, callable $listener)
+    {
         if (!isset($this->listeners[$event])) {
             $this->listeners[$event] = [];
         }
@@ -14,7 +16,8 @@ trait EventEmitter {
         return $this;
     }
 
-    public function once($event, callable $listener) {
+    public function once($event, callable $listener)
+    {
         if (!isset($this->onceListeners[$event])) {
             $this->onceListeners[$event] = [];
         }
@@ -22,7 +25,8 @@ trait EventEmitter {
         return $this;
     }
 
-    public function removeListener($event, callable $listener){
+    public function removeListener($event, callable $listener)
+    {
         if (isset($this->listeners[$event])) {
             $index = \array_search($listener, $this->listeners[$event], true);
             if (false !== $index) {
@@ -43,7 +47,8 @@ trait EventEmitter {
         }
     }
 
-    public function removeAllListeners($event = null) {
+    public function removeAllListeners($event = null)
+    {
         if ($event !== null) {
             unset($this->listeners[$event]);
         } else {
@@ -56,14 +61,16 @@ trait EventEmitter {
         }
     }
 
-    public function listeners($event) {
+    public function listeners($event)
+    {
         return array_merge(
             isset($this->listeners[$event]) ? $this->listeners[$event] : [],
             isset($this->onceListeners[$event]) ? $this->onceListeners[$event] : []
         );
     }
 
-    public function emit($event, array $arguments = []) {
+    public function emit($event, array $arguments = [])
+    {
         if (isset($this->listeners[$event])) {
             foreach ($this->listeners[$event] as $listener) {
                 $listener(...$arguments);

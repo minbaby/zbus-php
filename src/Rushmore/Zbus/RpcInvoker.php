@@ -1,7 +1,9 @@
 <?php
+
 namespace Rushmore\Zbus;
 
-class RpcInvoker {
+class RpcInvoker
+{
     public $producer;
     public $token;
 
@@ -12,42 +14,46 @@ class RpcInvoker {
 
     private $broker;
 
-    public function __construct($broker, $topic){
+    public function __construct($broker, $topic)
+    {
         $this->broker = $broker;
         $this->producer = new Producer($broker);
         $this->topic = $topic;
     }
 
-    public function __call($method, $args){
-        if($this->broker->isSync()){
+    public function __call($method, $args)
+    {
+        if ($this->broker->isSync()) {
             return $this->callSync($method, $args);
         }
 
         $this->callAsync($method, $args);
     }
 
-    private function callSync($method, $args){
+    private function callSync($method, $args)
+    {
         $request = new Request($method, $args);
         $request->module = $this->module;
 
         $response = $this->invoke($request, $this->rpcTimeout, $this->rpcSelector);
-        if($response->error != null){
+        if ($response->error != null) {
             throw new RpcException((string)$response->error);
         }
         return $response->result;
     }
 
 
-    private function callAsync($method, $args){
-        $params = array_slice($args, 0, count($args)-1);
-        $callback = $args[count($args)-1];
+    private function callAsync($method, $args)
+    {
+        $params = array_slice($args, 0, count($args) - 1);
+        $callback = $args[count($args) - 1];
 
         $request = new Request($method, $params);
         $request->module = $this->module;
 
-        $this->invokeAsync($request, function($response) use($callback){
-            if($response->error != null){
-                if(is_object($response) && is_a($response, Exception::class)){
+        $this->invokeAsync($request, function ($response) use ($callback) {
+            if ($response->error != null) {
+                if (is_object($response) && is_a($response, Exception::class)) {
                     $error = $response->error;
                 } else {
                     $error = new RpcException((string)$response->error);
@@ -60,8 +66,11 @@ class RpcInvoker {
         }, $this->rpcSelector);
     }
 
-    public function invokeAsync($request, callable $callback, $selector=null){
-        if($selector == null) $selector = $this->rpcSelector;
+    public function invokeAsync($request, callable $callback, $selector = null)
+    {
+        if ($selector == null) {
+            $selector = $this->rpcSelector;
+        }
 
         $msg = new Message();
         $msg->topic = $this->topic;
@@ -71,8 +80,8 @@ class RpcInvoker {
         $rpcBody = json_encode($request);
         $msg->setJsonBody($rpcBody);
 
-        $this->producer->publishAsync($msg, function($msgRes) use($callback){
-            if($msgRes->status != 200){
+        $this->producer->publishAsync($msg, function ($msgRes) use ($callback) {
+            if ($msgRes->status != 200) {
                 $res = new RpcException($msgRes->body);
                 call_user_func($callback, $res);
                 return;
@@ -84,12 +93,14 @@ class RpcInvoker {
             $res->result = @$arr['result'];
 
             call_user_func($callback, $res);
-
         }, $selector);
     }
 
-    public function invoke($request, $timeout=3, $selector=null){
-        if($selector == null) $selector = $this->rpcSelector;
+    public function invoke($request, $timeout = 3, $selector = null)
+    {
+        if ($selector == null) {
+            $selector = $this->rpcSelector;
+        }
 
         $msg = new Message();
         $msg->topic = $this->topic;
@@ -100,7 +111,7 @@ class RpcInvoker {
         $msg->setJsonBody($rpcBody);
 
         $msgRes = $this->producer->publish($msg, $timeout, $selector);
-        if($msgRes->status != 200){
+        if ($msgRes->status != 200) {
             throw new RpcException($msgRes->body);
         }
 
