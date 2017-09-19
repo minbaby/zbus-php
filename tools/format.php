@@ -7,11 +7,7 @@ $root = dirname(__DIR__);
 function fixCode()
 {
     global $root;
-    if (file_exists("$root/vendor/bin/php-cs-fixer")) {
-        `php $root/vendor/bin/php-cs-fixer fix`;
-    } else {
-        `php-cs-fixer fix -vvv`;
-    }
+    `php $root/vendor/bin/php-cs-fixer fix`;
 }
 
 function checkSyntax()

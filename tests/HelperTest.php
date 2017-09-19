@@ -11,7 +11,7 @@ class HelperTest extends TestCase
     public function testUuid()
     {
         $uuid = uuid();
-        self::assertRegExp("/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/", $uuid, 'format error');
+        $this->assertRegExp("/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/", $uuid, 'format error');
     }
 
     /**

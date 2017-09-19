@@ -3,7 +3,6 @@
 namespace Rushmore\Zbus;
 
 use Rushmore\Zbus\Mq\MqAdmin;
-use Rushmore\Zbus\Mq\MqClient;
 use Rushmore\Zbus\Mq\MqClientAsync;
 
 class Consumer extends MqAdmin
