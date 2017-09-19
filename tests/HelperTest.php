@@ -15,6 +15,7 @@ class HelperTest extends TestCase
     }
 
     /**
+     * TODO
      * @expectedException \Exception
      */
     public function testBuildMessage()
@@ -61,5 +62,24 @@ class HelperTest extends TestCase
         // to Exception
         $topicCtrl = new stdClass();
         buildMessage($topicCtrl);
+    }
+
+    public function testArrayGet()
+    {
+        $array = [
+            'key' => 'value',
+        ];
+
+        $ret = array_get($array, 'key', 'default');
+        $this->assertEquals($ret, 'value');
+
+        $ret = array_get($array, null, 'default');
+        $this->assertEquals($ret, $array);
+
+        $ret = array_get($array, 'yes', 'default');
+        $this->assertEquals($ret, 'default');
+
+        $ret = array_get(null, 'yes', 'default');
+        $this->assertEquals($ret, 'default');
     }
 }

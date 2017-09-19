@@ -3,6 +3,7 @@
 namespace Rushmore\Zbus\Rpc;
 
 use Exception;
+use Rushmore\Zbus\Broker;
 use Rushmore\Zbus\Message;
 use Rushmore\Zbus\Producer;
 use Rushmore\Zbus\Request;
@@ -20,6 +21,11 @@ class RpcInvoker
 
     private $broker;
 
+    /**
+     * RpcInvoker constructor.
+     * @param Broker $broker
+     * @param $topic
+     */
     public function __construct($broker, $topic)
     {
         $this->broker = $broker;

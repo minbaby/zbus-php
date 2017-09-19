@@ -50,3 +50,28 @@ function buildMessage($topicCtrl, $cmd = null)
     $msg->cmd = $cmd;
     return $msg;
 }
+
+/**
+ * laravel 简化版的 array_get， 不支持 点语法
+ *
+ * @param \ArrayAccess|array $array
+ * @param string $key
+ * @param null $default
+ * @return mixed
+ */
+function array_get($array, $key, $default = null)
+{
+    if (!(is_array($array) || $array instanceof ArrayAccess)) {
+        return $default;
+    }
+
+    if (is_null($key)) {
+        return $array;
+    }
+
+    if (isset($array[$key])) {
+        return $array[$key];
+    }
+
+    return $default;
+}
