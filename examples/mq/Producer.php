@@ -1,6 +1,11 @@
 <?php
 
-require_once '../../zbus.php';
+use Rushmore\Zbus\Broker;
+use Rushmore\Zbus\EventLoop;
+use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Producer;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 
 function biz($broker)

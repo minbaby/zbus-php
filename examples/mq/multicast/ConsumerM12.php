@@ -1,6 +1,12 @@
 <?php
 
-require_once '../../../zbus.php';
+use Rushmore\Zbus\Broker;
+use Rushmore\Zbus\ConsumeGroup;
+use Rushmore\Zbus\Consumer;
+use Rushmore\Zbus\EventLoop;
+use Rushmore\Zbus\Logger;
+
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 $messageHandler = function ($msg, $client) { //where you should focus on
     echo $msg . PHP_EOL;

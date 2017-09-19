@@ -4,6 +4,8 @@ namespace Rushmore\Zbus\Mq;
 
 use Exception;
 use Rushmore\Zbus\Logger;
+use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Protocol;
 use Rushmore\Zbus\ServerAddress;
 
 class MqClient

@@ -2,6 +2,12 @@
 
 namespace Rushmore\Zbus\Rpc;
 
+use Exception;
+use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Producer;
+use Rushmore\Zbus\Request;
+use Rushmore\Zbus\Response;
+
 class RpcInvoker
 {
     public $producer;

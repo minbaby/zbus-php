@@ -2,6 +2,7 @@
 
 namespace Rushmore\Zbus;
 
+use Rushmore\Zbus\Mq\MqClient;
 use Rushmore\Zbus\Mq\MqClientAsync;
 
 class Broker
@@ -159,7 +160,11 @@ class Broker
         return new MqClientAsync($serverAddress, $this->loop, $sslCertFile);
     }
 
-
+    /**
+     * @param $selector
+     * @param $msg
+     * @return Rpc\RpcInvoker[]
+     */
     public function select($selector, $msg)
     {
         $addressList = $selector($this->routeTable, $msg);

@@ -1,7 +1,12 @@
 <?php
 
+use Rushmore\Zbus\Broker;
+use Rushmore\Zbus\EventLoop;
+use Rushmore\Zbus\Logger;
+use Rushmore\Zbus\Request;
+use Rushmore\Zbus\Rpc\RpcInvoker;
 
-require_once '../../zbus.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 
 function biz($loop, $broker)

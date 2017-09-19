@@ -1,6 +1,10 @@
 <?php
 
-require_once '../../zbus.php';
+use Rushmore\Zbus\EventLoop;
+use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Mq\MqClientAsync;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 $loop = new EventLoop();
 

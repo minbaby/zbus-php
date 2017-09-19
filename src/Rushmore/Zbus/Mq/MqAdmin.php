@@ -3,14 +3,23 @@
 namespace Rushmore\Zbus\Mq;
 
 use Exception;
+use Rushmore\Zbus\Broker;
 use Rushmore\Zbus\Protocol;
 use Rushmore\Zbus\ServerAddress;
 
 class MqAdmin
 {
+    /**
+     * @var Broker
+     */
     protected $broker;
     protected $adminSelector;
     protected $token;
+
+    /**
+     * MqAdmin constructor.
+     * @param Broker $broker
+     */
     public function __construct($broker)
     {
         $this->broker = $broker;

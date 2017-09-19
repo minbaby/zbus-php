@@ -2,6 +2,10 @@
 
 namespace Rushmore\Zbus;
 
+use Rushmore\Zbus\Mq\MqAdmin;
+use Rushmore\Zbus\Mq\MqClient;
+use Rushmore\Zbus\Mq\MqClientAsync;
+
 class Consumer extends MqAdmin
 {
     public $messageHandler;
@@ -11,7 +15,6 @@ class Consumer extends MqAdmin
     public $consumeSelector;
     public $connectionCount = 1;
     public $consumeClientTable = [];
-
 
     public function __construct($broker, $topic, $consumeGroup = null)
     {
@@ -45,6 +48,9 @@ class Consumer extends MqAdmin
         });
     }
 
+    /**
+     * @param MqClientAsync $client
+     */
     private function consumeToServer($client)
     {
         $serverAddress = $client->serverAddress;
@@ -59,7 +65,7 @@ class Consumer extends MqAdmin
         $msg->token = $this->token;
 
         $clientList = [];
-        for ($i = 0; $i < $this->connectionCount;$i++) {
+        for ($i = 0; $i < $this->connectionCount; $i++) {
             $forkedClient = $client->fork();
             array_push($clientList, $forkedClient);
             $this->consume($forkedClient, $msg);
@@ -80,6 +86,10 @@ class Consumer extends MqAdmin
         unset($this->consumeClientTable[(string)$serverAddress]);
     }
 
+    /**
+     * @param $client
+     * @param $consumeCtrl
+     */
     private function consume($client, $consumeCtrl)
     {
         $consumer = $this;

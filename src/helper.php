@@ -45,7 +45,7 @@ function buildMessage($topicCtrl, $cmd = null)
             $msg->setHeader($key, $val);
         }
     } else {
-        throw new Exception("invalid: $topicCtrl");
+        throw new Exception("invalid: $topicCtrl"); // TODO 如果这里是 object 就会出现错误
     }
     $msg->cmd = $cmd;
     return $msg;

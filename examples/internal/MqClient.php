@@ -1,6 +1,10 @@
 <?php
 
-require_once '../../zbus.php';
+use Rushmore\Zbus\Logger;
+use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Mq\MqClient;
+
+require_once __DIR__ . '/../../vendor/autoload.php';
  
 Logger::$Level = Logger::INFO;
 
