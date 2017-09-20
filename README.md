@@ -17,6 +17,9 @@ zbus carefully designed on its protocol and components to embrace KISS(Keep It S
 - Working as RPC, compare it to many more.
 
 # zbus-php-client
+
+[![Build Status](https://www.travis-ci.org/minbaby/zbus-php.svg?branch=develop)](https://www.travis-ci.org/minbaby/zbus-php)[![Coverage Status](https://coveralls.io/repos/github/minbaby/zbus-php/badge.svg?branch=develop)](https://coveralls.io/github/minbaby/zbus-php?branch=develop)
+
 NO threading in PHP client, HA not ready yet! Pull request if you are interested.
 
 - Works for both PHP5 and PHP7
