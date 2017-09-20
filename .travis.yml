@@ -10,6 +10,11 @@ before_script:
 
 script: ./vendor/bin/phpunit
 
+after_script:
+  - export CI_BUILD_NUMBER="$TRAVIS_BUILD_NUMBER"
+  - export CI_PULL_REQUEST="$TRAVIS_PULL_REQUEST"
+  - export CI_BRANCH="$TRAVIS_BRANCH"
+
 matrix:
   fast_finish: true
 
