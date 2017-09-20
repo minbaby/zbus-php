@@ -24,4 +24,7 @@
     <php>
         <const name="PHPUNIT_RUNNING" value="true" />
     </php>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
 </phpunit>
