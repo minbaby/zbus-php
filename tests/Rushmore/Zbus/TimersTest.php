@@ -94,13 +94,8 @@ class TimersTest extends TestCase
         $schedulerProperty = $ref->getProperty('scheduler');
         $schedulerProperty->setAccessible(true);
 
-        $schedulerProperty->getValue($timers)->insert($timer1, -1);
+        $this->addTimerToTimers($timers, $timer1, -1, null, true, false);
         $this->assertNull($timers->getFirst());
-
-
-        // 反射 $timers
-        $timersProperty = $ref->getProperty('timers');
-        $timersProperty->setAccessible(true);
 
         $current = microtime(true);
         $scheduledAtList = [];
@@ -109,8 +104,7 @@ class TimersTest extends TestCase
             $timer = new Timer($i, function () {
             }, true);
             $scheduledAtList[] = $scheduledAt = $timer->getInterval() + $current;
-            $schedulerProperty->getValue($timers)->insert($timer, -$scheduledAt);
-            $timersProperty->getValue($timers)->attach($timer, $scheduledAt);
+            $this->addTimerToTimers($timers, $timer, -$scheduledAt, $scheduledAt);
         }
 
         $this->assertEquals($scheduledAtList[0], $timers->getFirst());
@@ -135,17 +129,70 @@ class TimersTest extends TestCase
         $timers->add($timer1);
         $timers->add($timer2);
 
-        usleep(1000 * 10);
+        usleep(1000 * 1000 * $timer1->getInterval());
         $timers->tick();
         $this->expectOutputString($str .= $once);
 
         $i = 0;
         while ($i < 10) {
-            usleep(1000 * 20);
+            usleep(1000 * 1000 * $timer2->getInterval());
             $timers->tick();
             $this->resetCount();
             $this->expectOutputString($str .= $every);
             $i++;
+        }
+
+        $timers1 = new Timers();
+
+        $timer3 = new Timer(0.02, function () use ($every) {
+            echo $every;
+        }, true);
+
+
+        $this->addTimerToTimers($timers1, $timer3, null, null, true, false);
+
+        usleep(1000 * 1000 * $timer3->getInterval());
+
+        $timers1->tick();
+        $this->assertTrue($timers1->isEmpty());
+    }
+
+    /**
+     * @param Timers $timers
+     * @param Timer $time
+     * @param $schedulerValue
+     * @param $timersValue
+     * @param $doSchedulerValue
+     * @param $doTimersValue
+     */
+    protected function addTimerToTimers(
+        Timers $timers,
+        Timer $time,
+        $schedulerValue,
+        $timersValue,
+        $doSchedulerValue = true,
+        $doTimersValue = true
+    ) {
+        $ref = new \ReflectionClass($timers);
+
+        if ($doSchedulerValue) {
+            // 反射 $scheduler 特殊情况处理
+            $schedulerProperty = $ref->getProperty('scheduler');
+            $schedulerProperty->setAccessible(true);
+
+            $schedulerProperty->getValue($timers)->insert($time, $schedulerValue);
+        }
+
+
+        if ($doTimersValue) {
+            // 反射 $timers
+            $timersProperty = $ref->getProperty('timers');
+            $timersProperty->setAccessible(true);
+            if ($timersValue == null) {
+                $timersProperty->getValue($timers)->attach($time);
+            } else {
+                $timersProperty->getValue($timers)->attach($time, $timersValue);
+            }
         }
     }
 }

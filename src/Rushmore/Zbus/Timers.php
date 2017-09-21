@@ -74,7 +74,6 @@ final class Timers
 
         while (!$scheduler->isEmpty()) {
             $timer = $scheduler->top();
-
             if (!isset($timers[$timer])) {
                 $scheduler->extract();
                 $timers->detach($timer);
