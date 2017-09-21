@@ -79,34 +79,73 @@ class TimersTest extends TestCase
         $this->assertFalse($timers->isEmpty());
     }
 
-
-
-    //TODO
     public function testGetFirst()
     {
-        $timers= new Timers();
+        $timers = new Timers();
 
         $this->assertNull($timers->getFirst());
 
-
         $timer1 = new Timer(1, function () {
         }, true);
-        $microtime1 = microtime(true) + $timer1->getInterval();
-        $timers->add($timer1);
 
-        $timer2 = new Timer(2, function () {
+        $ref = new \ReflectionClass($timers);
+
+        // 反射 $scheduler 特殊情况处理
+        $schedulerProperty = $ref->getProperty('scheduler');
+        $schedulerProperty->setAccessible(true);
+
+        $schedulerProperty->getValue($timers)->insert($timer1, -1);
+        $this->assertNull($timers->getFirst());
+
+
+        // 反射 $timers
+        $timersProperty = $ref->getProperty('timers');
+        $timersProperty->setAccessible(true);
+
+        $current = microtime(true);
+        $scheduledAtList = [];
+
+        foreach (range(0, 10) as $i) {
+            $timer = new Timer($i, function () {
+            }, true);
+            $scheduledAtList[] = $scheduledAt = $timer->getInterval() + $current;
+            $schedulerProperty->getValue($timers)->insert($timer, -$scheduledAt);
+            $timersProperty->getValue($timers)->attach($timer, $scheduledAt);
+        }
+
+        $this->assertEquals($scheduledAtList[0], $timers->getFirst());
+    }
+
+    public function testTick()
+    {
+        $str = '';
+        $once = 'callback-one-time';
+        $every = 'callback-every-time';
+
+        $timers = new Timers();
+
+        $timer1 = new Timer(0.01, function () use ($once) {
+            echo $once;
+        }, false);
+
+        $timer2 = new Timer(0.02, function () use ($every) {
+            echo $every;
         }, true);
-        $microtime2 = microtime(true);
+
+        $timers->add($timer1);
         $timers->add($timer2);
 
-        $timer3 = new Timer(3, function () {
-        }, true);
-        $microtime3 = microtime(true);
-        $timers->add($timer3);
+        usleep(1000 * 10);
+        $timers->tick();
+        $this->expectOutputString($str .= $once);
 
-        $this->assertLessThanOrEqual($timers->getFirst(), $microtime2);
-        $this->assertLessThanOrEqual($timers->getFirst(), $microtime2);
-
-
+        $i = 0;
+        while ($i < 10) {
+            usleep(1000 * 20);
+            $timers->tick();
+            $this->resetCount();
+            $this->expectOutputString($str .= $every);
+            $i++;
+        }
     }
 }

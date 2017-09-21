@@ -47,7 +47,7 @@ class HelperTest extends TestCase
 
         $topicCtrlArr = [
             'topic' => $topicCtrl,
-            'some'  => $cmd
+            'some' => $cmd
         ];
 
         $msg = buildMessage($topicCtrlArr);
