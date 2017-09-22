@@ -18,7 +18,7 @@ class ConsumeGroup
         $this->filter = $filter;
     }
 
-    public function fromMessage($msg)
+    public function fromMessage(Message $msg)
     {
         $this->topic = $msg->getHeader(Protocol::TOPIC);
         $this->groupName = $msg->getHeader(Protocol::CONSUME_GROUP);
@@ -29,7 +29,7 @@ class ConsumeGroup
         $this->startTime = $msg->getHeader(Protocol::GROUP_START_TIME);
     }
 
-    public function toMessage($msg)
+    public function toMessage(Message $msg)
     {
         $msg->setHeader(Protocol::TOPIC, $this->topic);
         $msg->setHeader(Protocol::CONSUME_GROUP, $this->groupName);
