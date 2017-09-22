@@ -10,7 +10,6 @@ class Message
     public $headers = [];
     public $body;
 
-
     public function removeHeader($name)
     {
         if (!array_key_exists($name, $this->headers)) {
@@ -49,7 +48,6 @@ class Message
         $this->headers[$name] = $value;
     }
 
-
     public function __get($name)
     {
         if (!array_key_exists($name, $this->headers)) {
@@ -62,7 +60,6 @@ class Message
     {
         return $this->encode();
     }
-
 
     public function encode()
     {
