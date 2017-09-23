@@ -13,7 +13,7 @@ class TimerTest extends TestCase
     }
 
 
-    protected function getCallback()
+    protected function getReturnCallback($value = '')
     {
         return function () {
             return __LINE__;
@@ -23,12 +23,12 @@ class TimerTest extends TestCase
     public function testMinInterval()
     {
         $min = 0.0000001;
-        $timer = new Timer($min, $this->getCallback(), true);
+        $timer = new Timer($min, $this->getReturnCallback(), true);
         $this->assertLessThan(Timer::MIN_INTERVAL, $min);
         $this->assertEquals($timer->getInterval(), Timer::MIN_INTERVAL);
 
         $excepted = 0.1;
-        $timer = new Timer($excepted, $this->getCallback(), true);
+        $timer = new Timer($excepted, $this->getReturnCallback(), true);
         $this->assertEquals($timer->getInterval(), $excepted);
     }
 
@@ -37,9 +37,9 @@ class TimerTest extends TestCase
      */
     public function testGetCallBack()
     {
-        $timer = new Timer(Timer::MIN_INTERVAL, $this->getCallback(), true);
+        $timer = new Timer(Timer::MIN_INTERVAL, $this->getReturnCallback(), true);
         $actual = $timer->getCallback();
-        $excepted = $this->getCallback();
+        $excepted = $this->getReturnCallback();
         $this->assertTrue(is_callable($actual));
         $this->assertEquals($actual(), $excepted());
 
@@ -56,10 +56,10 @@ class TimerTest extends TestCase
 
     public function testPeriodic()
     {
-        $timer = new Timer(Timer::MIN_INTERVAL, $this->getCallback(), true);
+        $timer = new Timer(Timer::MIN_INTERVAL, $this->getReturnCallback(), true);
         $this->assertTrue($timer->isPeriodic());
 
-        $timer = new Timer(Timer::MIN_INTERVAL, $this->getCallback(), false);
+        $timer = new Timer(Timer::MIN_INTERVAL, $this->getReturnCallback(), false);
         $this->assertFalse($timer->isPeriodic());
     }
 
