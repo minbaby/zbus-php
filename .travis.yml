@@ -20,6 +20,7 @@ install:
   - cd /tmp/zbus-0.9.0-RC1/zbus-dist/bin/
   - bash zbus.sh
   - bash zbus2.sh
+  - cd ~/minbaby/zbus-php
 addons:
   apt:
     packages:
