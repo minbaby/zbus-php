@@ -112,14 +112,27 @@ class RpcProcessorTest extends TestCase
             ->andReturnUsing(function (Message $arg) {
                 $this->assertRegExp("/Missing argument 1 for/", $arg->body);
             })
-            ->once()
+            ->atLeast()->times(0)
+            ->atMost()->times(1)
             ->getMock();
+
 
         $msg = new Message();
         $msg->id = $id;
         $msg->sender = $user;
         $msg->setJsonBody(str_replace('[1,2]', 'null', $body));
 
-        $rpc->messageHandler($msg, $client);
+
+        if (version_compare('7.1', PHP_VERSION, "<=")) {
+            $argumentCountError = null;
+            try {
+                $rpc->messageHandler($msg, $client);
+            } catch (\ArgumentCountError $error) {
+                $argumentCountError = $error;
+            }
+            $this->assertNotNull($argumentCountError);
+        } else {
+            $rpc->messageHandler($msg, $client);
+        }
     }
 }
