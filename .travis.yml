@@ -17,8 +17,9 @@ notifications:
 install:
   - wget https://github.com/rushmore/zbus/archive/0.9.0-RC1.zip -O /tmp/zbus.zip
   - unzip /tmp/zbus.zip -d /tmp
-  - bash /tmp/zbus-0.9.0-RC1/zbus-dist/bin/zbus.sh
-  - bash /tmp/zbus-0.9.0-RC1/zbus-dist/bin/zbus2.sh
+  - cd /tmp/zbus-0.9.0-RC1/zbus-dist/bin/
+  - bash zbus.sh
+  - bash zbus2.sh
 addons:
   apt:
     packages:
