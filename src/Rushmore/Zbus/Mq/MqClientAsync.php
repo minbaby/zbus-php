@@ -10,7 +10,7 @@ use Rushmore\Zbus\Protocol;
 use Rushmore\Zbus\ServerAddress;
 use Rushmore\Zbus\Stream;
 
-class MqClientAsync
+class MqClientAsync implements BaseClient
 {
     use EventEmitter;
 
@@ -251,7 +251,12 @@ class MqClientAsync
         });
     }
 
-    public function route($msg)
+    /**
+     * @param Message $msg
+     * @param int $timeout 异步不需要设置 timeout
+     * @return mixed|void
+     */
+    public function route(Message $msg, $timeout = -1)
     {
         $msg->cmd = Protocol::ROUTE;
         if ($msg->status != null) {

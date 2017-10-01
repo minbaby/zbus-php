@@ -8,7 +8,7 @@ use Rushmore\Zbus\Message;
 use Rushmore\Zbus\Protocol;
 use Rushmore\Zbus\ServerAddress;
 
-class MqClient
+class MqClient implements BaseClient
 {
     public $sock;
     public $token;
@@ -25,6 +25,11 @@ class MqClient
         $this->sslCertFile = $sslCertFile;
     }
 
+    /**
+     * TODO timeout not used
+     *
+     * @param int $timeout
+     */
     public function connect($timeout = 3)
     {
         $address = $this->serverAddress->address;
@@ -36,8 +41,8 @@ class MqClient
         }
 
         Logger::debug("Trying connect to ($this->serverAddress)");
-        $this->sock = socket_create(AF_INET, SOCK_STREAM, 0);
-        if (!socket_connect($this->sock, $host, $port)) {
+        $this->sock = @socket_create(AF_INET, SOCK_STREAM, 0);
+        if (!@socket_connect($this->sock, $host, $port)) {
             $this->throw_socket_exception("Connection to ($address) failed");
         }
         Logger::debug("Connected to ($this->serverAddress)");
@@ -61,6 +66,11 @@ class MqClient
     }
 
 
+    /**
+     * @param Message $msg
+     * @param int $timeout
+     * @return Message
+     */
     public function invoke($msg, $timeout = 3)
     {
         $msgid = $this->send($msg, $timeout);
@@ -202,7 +212,12 @@ class MqClient
         return $this->invokeObject(Protocol::EMPTY_, $topicCtrl, $timeout);
     }
 
-    public function route($msg, $timeout = 3)
+    /**
+     * @param Message $msg
+     * @param int $timeout
+     * @return string|void
+     */
+    public function route(Message $msg, $timeout = 3)
     {
         $msg->cmd = Protocol::ROUTE;
         if ($msg->status != null) {

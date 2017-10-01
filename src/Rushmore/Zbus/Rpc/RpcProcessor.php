@@ -7,6 +7,8 @@ use Exception;
 use ReflectionClass;
 use ReflectionMethod;
 use Rushmore\Zbus\Message;
+use Rushmore\Zbus\Mq\BaseClient;
+use Rushmore\Zbus\Mq\MqClient;
 use Rushmore\Zbus\Request;
 use Rushmore\Zbus\Response;
 
@@ -21,7 +23,14 @@ class RpcProcessor
         }
         $serviceClass = get_class($service);
         $class = new ReflectionClass($serviceClass);
-        $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC & ~ReflectionMethod::IS_STATIC);
+
+        // http://php.net/manual/zh/reflectionclass.getmethods.php
+        // Note: 请注意：其他位操作，例如 ~ 无法按预期运行。这个例子也就是说，无法获取所有的非静态方法
+        $methods = $class->getMethods(ReflectionMethod::IS_PUBLIC);
+        $methods = array_filter($methods, function (\ReflectionMethod $method) {
+            return !$method->isStatic();
+        });
+
         foreach ($methods as $method) {
             $key = $this->genKey($module, $method->name);
             $this->methods[$key] = [$method, $service];
@@ -54,7 +63,11 @@ class RpcProcessor
     }
 
 
-    public function messageHandler($msg, $client)
+    /**
+     * @param Message $msg
+     * @param BaseClient $client
+     */
+    public function messageHandler(Message $msg, BaseClient $client)
     {
         $msgRes = new Message();
         $msgRes->recver = $msg->sender;
@@ -65,7 +78,7 @@ class RpcProcessor
         try {
             $json = json_decode($msg->body, true);
             $request = new Request();
-            $request->method = @$json['method'];
+            $request->method = @$json['method']; // TOOD 这么写其实不太好
             $request->params = @$json['params'];
             $request->module = @$json['module'];
 

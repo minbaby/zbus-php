@@ -34,6 +34,7 @@ class TimerTest extends TestCase
 
     /**
      * @expectedException \Exception
+     * @expectedExceptionMessage error
      */
     public function testGetCallBack()
     {
